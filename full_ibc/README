@@ -1,25 +1,10 @@
-README
+ README
 
 How to Start Tensorflow:
 * go to tensorflow directory : cd tensorflow 
 * start an environment : source ./bin/activate 
 * run python script 
 * exit environment : deactivate 
-
-Keras: 
-* Can use within python script as: import keras 
-
-Plan: 
-1. Use IBC sentence level data 
-- Prprocess to mimic IMDB data 
-	- write to cvs with 0 1 labels 
- 	- preprocess as frequency ssequences using keras api
-- run RNN model, try to get accuracy up as much as possible 
-- validate 
-2. Add in phrase level labeled data 
-- run RNN model, try to get accuracy up as much as possible
-- validate 
-
 
 Ideas: 
 - Scrape Allsides website for new more up to date data 
@@ -34,9 +19,8 @@ Analysis that can be run:
 - Article scores across an author
 - Article scores across different sources 
 
-
 Steps:
-- add neutral?
+- why did neutral do so bad? -> how to add in non-binary labels? 
 - upload to AWS so computer doesn't explode
 - why was K-fold so bad? -> data set too small?
 

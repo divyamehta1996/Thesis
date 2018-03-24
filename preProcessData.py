@@ -40,7 +40,7 @@ def tokenize_corpus(path):
     for t in tokens: 
       try:
             words[t] = words[t]+1
-        except:
+      except:
             words[t] = 1 
     docs.append(tokens)
   return words
@@ -62,19 +62,19 @@ def transformData(words):
   lines = lines_old[1:]
   transform_data = []
   max_line = 0
-    for line in lines:
-      newLine = []
-      raw = line.decode('latin1')
-      raw = re.sub('[%s]' % ''.join(chars), ' ', raw)
-      tokens = word_tokenize(raw)
-      tokens = [w for w in tokens if w not in stopWords]
-      if len(tokens) > max_line:
-        max_line = len(tokens)
-      for each in tokens:
-        newLine.append(vocab[each])
-      transform_data.append(newLine)
+  for line in lines:
+    newLine = []
+    raw = line.decode('latin1')
+    raw = re.sub('[%s]' % ''.join(chars), ' ', raw)
+    tokens = word_tokenize(raw)
+    tokens = [w for w in tokens if w not in stopWords]
+    if len(tokens) > max_line:
+      max_line = len(tokens)
+    for each in tokens:
+      newLine.append(vocab[each])
+    transform_data.append(newLine)
 
-    return transform_data
+  return transform_data
 
 
 def main():
@@ -82,10 +82,10 @@ def main():
   transform_data = transformData(words)
 
     # 3726 by 84 #14748 vocab #or by 57 without stopwords
-    trainX = sequence.pad_sequences(transform_data)
-    trainY = pd.read_csv("processedLabels1.csv", header = 0, low_memory=False)
+  trainX = sequence.pad_sequences(transform_data)
+  trainY = pd.read_csv("processedLabels1.csv", header = 0, low_memory=False)
 
-    X_train, X_test, y_train, y_test = train_test_split(trainX, trainY, test_size=0.4, random_state=0)
+  X_train, X_test, y_train, y_test = train_test_split(trainX, trainY, test_size=0.4, random_state=0)
   
   # trainX = np.array(X)
   # trainY = np.array(Y)
