@@ -1,9 +1,42 @@
 import cPickle
 import pandas as pd 
 import numpy as np
+from scrape_allSides import retrieve 
 
-if __name__ == '__main__':
-    [lib, con, neutral] = cPickle.load(open('ibcData.pkl', 'rb'))
+def parse_data(lib, con, neutral):
+    #len(lib) = 2025, len(con) = 1701, len(600) = 600
+    # how to access sentence text
+    print 'Liberal examples (out of ', len(lib), ' sentences): '
+    for tree in lib[0:5]:
+        print tree.get_words()
+
+    print '\nConservative examples (out of ', len(con), ' sentences): '
+    for tree in con[0:5]:
+        print tree.get_words()
+
+    print '\nNeutral examples (out of ', len(neutral), ' sentences): '
+    for tree in neutral[0:5]:
+        print tree.get_words()
+
+    # how to access phrase labels for a particular tree
+    ex_tree = lib[0]
+
+    print '\nPhrase labels for one tree: '
+
+    # see treeUtil.py for the tree class definition
+    for node in ex_tree:
+
+        # remember, only certain nodes have labels (see paper for details)
+        if hasattr(node, 'label'):
+            print node.label, ': ', node.get_words()
+
+        # elif hasattr(node, 'print_leaf'):
+        #     print node.print_leaf()
+
+        # elif hasattr(node, 'get_words'):
+        #     print node.get_words()
+
+def write_combined(lib, con):
     data = []
     labels = []
     combined = lib + con
@@ -17,58 +50,33 @@ if __name__ == '__main__':
                     data.append(each.get_words())
                     labels.append(1)
                 elif node.label == "Neutral":
-                    data.append(each.get_words())
-                    labels.append(2)
+                    j = 0
                 else:
-                    print "else??"
-                   
+                    print node.label
+    return data, labels
 
+def output(data, labels, datafile, labelfile):
     df = pd.DataFrame(np.array(data))
     lf = pd.DataFrame(np.array(labels))
-    df.to_csv('processedData2.csv', index=False)
-    lf.to_csv('processedLabels2.csv', index=False)
-    print len(df)
-    print len(lf)
-
-    # # how to access sentence text
-    # print 'Liberal examples (out of ', len(lib), ' sentences): '
-    # for tree in lib[0:5]:
-    #     print tree.get_words()
-
-    # print '\nConservative examples (out of ', len(con), ' sentences): '
-    # for tree in con[0:5]:
-    #     print tree.get_words()
-
-    # print '\nNeutral examples (out of ', len(neutral), ' sentences): '
-    # for tree in neutral[0:5]:
-    #     print tree.get_words()
-
-    # # how to access phrase labels for a particular tree
-    # ex_tree = lib[0]
-
-    # print '\nPhrase labels for one tree: '
-
-    # # see treeUtil.py for the tree class definition
-    # for node in ex_tree:
-
-    #     # remember, only certain nodes have labels (see paper for details)
-    #     if hasattr(node, 'label'):
-    #         print node.label, ': ', node.get_words()
-
-    #     elif hasattr(node, 'print_leaf'):
-    #         print node.print_leaf()
-
-    #     elif hasattr(node, 'get_words'):
-    #         print node.get_words()
+    df.to_csv(datafile, index=False)
+    lf.to_csv(labelfile, index=False)
+    return len(df), len(lf)
 
 
-#ReadMe 
-    # len(lib) = 2025
-    # len(con) = 1701
-    # len(600) = 600
+def main():
+    [lib, con, neutral] = cPickle.load(open('ibcData.pkl', 'rb'))
+    data1, labels1 = retrieve()
+    data, labels = write_combined(lib, con)
+    np.array(data)
+    np.array(labels)
+    newData = np.append(data1, data, axis=0)
+    newLabels = np.append(labels1, labels, axis=0)
+    df, lf = output(newData, newLabels, 'combinedData.csv', 'combinedLabels.csv')
+    print df, lf
 
-    # Each sub-array is an array of nodes of type nodeObj 
-    # Each tree element is a nodeObj(iterable tree) containing: 
-        # some nodeObjs containing a phrase with a label 
-        # some nodeObjs containing a phrase with no label 
-        # some leafObjs that break the phrases down into indivdiual words with some annotation
+if __name__ == "__main__":
+    main()
+
+
+
+

@@ -24,3 +24,10 @@ Steps:
 - upload to AWS so computer doesn't explode
 - why was K-fold so bad? -> data set too small?
 
+
+Tree Structure in IBC Data
+# Each sub-array is an array of nodes of type nodeObj 
+# Each tree element is a nodeObj(iterable tree) containing: 
+    # some nodeObjs containing a phrase with a label 
+    # some nodeObjs containing a phrase with no label 
+    # some leafObjs that break the phrases down into indivdiual words with some annotation

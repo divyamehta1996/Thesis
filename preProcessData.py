@@ -56,7 +56,7 @@ def transformData(words):
     i = i + 1
 
   # print len(vocab)
-  f = open("processedData1.csv", 'r')
+  f = open("allSidesData.csv", 'r')
   stopWords = stopwords.words("english")
   lines_old = f.readlines()
   lines = lines_old[1:]
@@ -78,15 +78,16 @@ def transformData(words):
 
 
 def main():
-  words = tokenize_corpus("processedData1.csv")
+  words = tokenize_corpus("allSidesData.csv")
   transform_data = transformData(words)
 
     # 3726 by 84 #14748 vocab #or by 57 without stopwords
   trainX = sequence.pad_sequences(transform_data)
-  trainY = pd.read_csv("processedLabels1.csv", header = 0, low_memory=False)
+  trainY = pd.read_csv("allSidesLabels.csv", header = 0, low_memory=False)
 
-  X_train, X_test, y_train, y_test = train_test_split(trainX, trainY, test_size=0.4, random_state=0)
-  
+  X_train, X_test, y_train, y_test = train_test_split(trainX, trainY, test_size=0.2, random_state=0)
+
+  # # print len(X_train)
   # trainX = np.array(X)
   # trainY = np.array(Y)
   # kf = KFold(n_splits=5)
@@ -98,7 +99,7 @@ def main():
   # create the model
   embedding_vecor_length = 32
   model = Sequential()
-  model.add(Embedding(14749, embedding_vecor_length, input_length=57))
+  model.add(Embedding(22125, embedding_vecor_length, input_length=23))
   model.add(LSTM(200))
   model.add(Dense(1, activation='sigmoid'))
   model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
