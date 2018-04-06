@@ -1,7 +1,7 @@
 import cPickle
 import pandas as pd 
 import numpy as np
-from scrape_allSides import retrieve 
+# from scrape_allSides import retrieve 
 
 def parse_data(lib, con, neutral):
     #len(lib) = 2025, len(con) = 1701, len(600) = 600
@@ -42,12 +42,14 @@ def write_combined(lib, con):
     combined = lib + con
     for each in combined:
         for node in each:
+            phrase = node.get_words()
             if hasattr(node, 'label'):
+                # print 'phrase', node.get_words(), node.label 
                 if node.label == "Conservative":
-                    data.append(each.get_words())
+                    data.append(phrase)
                     labels.append(0)
                 elif node.label == "Liberal":
-                    data.append(each.get_words())
+                    data.append(phrase)
                     labels.append(1)
                 elif node.label == "Neutral":
                     j = 0
@@ -65,13 +67,13 @@ def output(data, labels, datafile, labelfile):
 
 def main():
     [lib, con, neutral] = cPickle.load(open('ibcData.pkl', 'rb'))
-    data1, labels1 = retrieve()
+    # data1, labels1 = retrieve()
     data, labels = write_combined(lib, con)
     np.array(data)
     np.array(labels)
-    newData = np.append(data1, data, axis=0)
-    newLabels = np.append(labels1, labels, axis=0)
-    df, lf = output(newData, newLabels, 'combinedData.csv', 'combinedLabels.csv')
+    # newData = np.append(data1, data, axis=0)
+    # newLabels = np.append(labels1, labels, axis=0)
+    df, lf = output(data, labels, 'IBCData_withPhrases.csv', 'IBCLabels_withPhrases.csv')
     print df, lf
 
 if __name__ == "__main__":

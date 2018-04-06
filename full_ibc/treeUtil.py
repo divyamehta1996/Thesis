@@ -26,6 +26,12 @@ class leafObj:
     def set_label(self, label):
         self.label = label
 
+    def returnType(self):
+        return 0
+
+    def get_words(self):
+        return self.word
+
 
 class nodeObj:
 
@@ -52,6 +58,9 @@ class nodeObj:
     def set_all_betas(self, beta):
         for node in self:
             node.beta = beta
+
+    def returnType(self):
+        return 1
 
     def reset_finished(self):
         for node in self:

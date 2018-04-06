@@ -16,6 +16,7 @@ from keras.preprocessing import sequence
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.layers import Dropout
 from keras.layers import LSTM
 from keras.layers.embeddings import Embedding
 from sklearn.model_selection import KFold
@@ -45,7 +46,7 @@ def tokenize_corpus(path):
     docs.append(tokens)
   return words
 
-def transformData(words):
+def transformData(words, file):
   sorted_words = sorted(words.items(), key=operator.itemgetter(1), reverse=True)
   i = 1
   vocab = {}
@@ -56,7 +57,7 @@ def transformData(words):
     i = i + 1
 
   # print len(vocab)
-  f = open("allSidesData.csv", 'r')
+  f = open(file, 'r')
   stopWords = stopwords.words("english")
   lines_old = f.readlines()
   lines = lines_old[1:]
@@ -78,15 +79,25 @@ def transformData(words):
 
 
 def main():
+  words = tokenize_corpus("IBCData_withPhrases.csv")
+  transform_data = transformData(words, "IBCData_withPhrases.csv")
+
+  # 3726 by 84 #14748 vocab #or by 57 without stopwords
+  X_train = sequence.pad_sequences(transform_data)
+  y_train = pd.read_csv("IBCLabels_withPhrases.csv", header = 0, low_memory=False)
+
+  #test split
+  # X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.2, random_state=0)
+
+  #test old model on new data 
   words = tokenize_corpus("allSidesData.csv")
-  transform_data = transformData(words)
+  transform_data = transformData(words, "allSidesData.csv")
+  # print np.array(transform_data).shape
+  X_test = sequence.pad_sequences(transform_data,  maxlen=57)
+  # print np.array(X_test).shape
+  y_test = pd.read_csv("allSidesLabels.csv", header = 0, low_memory=False)
 
-    # 3726 by 84 #14748 vocab #or by 57 without stopwords
-  trainX = sequence.pad_sequences(transform_data)
-  trainY = pd.read_csv("allSidesLabels.csv", header = 0, low_memory=False)
-
-  X_train, X_test, y_train, y_test = train_test_split(trainX, trainY, test_size=0.2, random_state=0)
-
+  #test K-Fold Validation 
   # # print len(X_train)
   # trainX = np.array(X)
   # trainY = np.array(Y)
@@ -99,8 +110,10 @@ def main():
   # create the model
   embedding_vecor_length = 32
   model = Sequential()
-  model.add(Embedding(22125, embedding_vecor_length, input_length=23))
-  model.add(LSTM(200))
+  model.add(Embedding(26435, embedding_vecor_length, input_length=57))
+  # model.add(Dropout(0.2))
+  model.add(LSTM(200, dropout=0.2, recurrent_dropout=0.2))
+  # model.add(Dropout(0.2))
   model.add(Dense(1, activation='sigmoid'))
   model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
   print(model.summary())
